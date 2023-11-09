@@ -1,7 +1,8 @@
-import PaymentServices.OnSiteOrderService;
-import PaymentServices.OnlineOrderService;
-import PaymentServices.OrderService;
-import PaymentServices.PhoneOrderService;
+import interfaces.PaymentService;
+import services.OnSiteOrderService;
+import services.OnlineOrderService;
+import interfaces.RegisterService;
+import services.PhoneOrderService;
 
 import java.util.Scanner;
 
@@ -9,7 +10,8 @@ public class Main {
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        OrderService orderService = null;
+        RegisterService registerService;
+        PaymentService paymentService;
         String customerName;
         Order order;
         int customerAnswerForOrder = 0;
@@ -39,25 +41,26 @@ public class Main {
         System.out.println("Enter Your Payment Method (1 for online and 2 for on-site and 3 for phone):");
         customerAnswerForPaymentMethod = scanner.nextInt();
         if (customerAnswerForPaymentMethod == 1) {
-            orderService = new OnlineOrderService();
-            orderService.onlineOrderRegister(customerName);
+            OnlineOrderService orderService = new OnlineOrderService();
+            registerService = orderService;
+            paymentService = orderService;
         } else if (customerAnswerForPaymentMethod == 2) {
-            orderService = new OnSiteOrderService();
-            orderService.onSiteOrderRegister(customerName);
+            OnSiteOrderService orderService = new OnSiteOrderService();
+            registerService = orderService;
+            paymentService = orderService;
         } else if (customerAnswerForPaymentMethod == 3) {
-            orderService = new PhoneOrderService();
-            orderService.phoneOrderRegister(customerName);
+            PhoneOrderService orderService = new PhoneOrderService();
+            registerService = orderService;
+            paymentService = orderService;
+        } else {
+            System.out.println("Invalid Input!");
+            return;
         }
+        registerService.register(customerName);
 
         //Step3 : pay price
         System.out.println("Pay Price:");
-        if (orderService instanceof OnlineOrderService) {
-            orderService.onlineOrderPayment(order.getTotalPrice());
-        } else if (orderService instanceof OnSiteOrderService) {
-            orderService.onSiteOrderPayment(order.getTotalPrice());
-        } else if (orderService instanceof PhoneOrderService) {
-            orderService.phoneOrderPayment(order.getTotalPrice());
-        }
+        paymentService.payment(order.getTotalPrice());
 
         //Finally Print Bill
         System.out.println(order);
